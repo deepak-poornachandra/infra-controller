@@ -20,12 +20,13 @@ We welcome contributions of all sizes — from fixing a typo in the docs to addi
 - [Contribution Process](#contribution-process)
 - [Engineering Guidelines](#engineering-guidelines)
 - [Pull Request Guidelines](#pull-request-guidelines)
+- [Hardware Support](#hardware-support)
 
 ## Developer Certificate of Origin (DCO)
 
 NCX Infra Controller requires the Developer Certificate of Origin (DCO) process to be followed for all contributions.
 
-The DCO is a lightweight way for contributors to certify that they wrote or otherwise have the right to submit the code they are contributing. The full text of the DCO can be found at [developercertificate.org](https://developercertificate.org/):
+The DCO is a lightweight way for contributors to certify that they wrote or otherwise have the right to submit the code they are contributing. The full text of the DCO can be found at [developercertificate.org](https://developercertificate.org/).
 
 ```
 Developer Certificate of Origin
@@ -108,7 +109,7 @@ Or to sign off all commits in a branch:
 git rebase --signoff --gpg-sign origin/main
 ```
 
-If your Git configuration already has `commit.gpgsign` enabled, Git signs rewritten commits automatically. Otherwise, use `--gpg-sign` when rebasing to ensure rewritten commits keep the cryptographic signature required by branch protection.
+If your Git configuration already has `commit.gpgsign` enabled, Git signs rewritten commits automatically. Otherwise, use `--gpg-sign` when rebasing to ensure rewritten commits keep the cryptographic signature.
 
 ### DCO Enforcement
 
@@ -280,6 +281,89 @@ for the requested behavior.
 
 For pinned dependency updates, image testing, and build optimization trade-offs, see the
 [Build Guide](docs/development/build-guide.md).
+
+## Hardware Support
+
+NICo interacts directly with physical hardware through Redfish-based out-of-band management. Adding support for a new host platform, DPU generation, or NIC requires changes across several layers of the codebase. Follow the guidance below to ensure your contribution is complete, testable, and consistent with existing hardware support patterns.
+
+### Before You Start
+
+Hardware support contributions have a higher review bar than software-only changes. Before writing any code:
+
+1. **Open an issue first** describing the hardware you want to add (OEM, model, DPU generation, firmware version). The maintainers will confirm whether it is on the roadmap and advise on scope.
+2. **Confirm Redfish compliance** — the target hardware must support the Redfish operations required by NICo: power control, boot order, UEFI Secure Boot toggle, IPv6, firmware update, and Serial-over-LAN. Hardware that does not meet this baseline will not be accepted.
+3. **Check the Hardware Compatibility List** at `docs/hcl.md` to avoid duplicating an already-supported platform.
+
+### Adding a New Host Platform
+
+Each supported host platform has a dedicated mock implementation under `crates/bmc-mock/src/hw/`. The mock must faithfully represent how the real hardware surfaces itself via Redfish before any integration work begins.
+
+1. **Create a new hardware mock file** at `crates/bmc-mock/src/hw/<oem>_<model>.rs`, following the structure of an existing file such as `dell_poweredge_r750.rs` or `supermicro_gb300_nvl.rs`.
+
+2. **Register the new hardware type** in `crates/bmc-mock/src/hw/mod.rs` and add a corresponding variant to the `HostHardwareType` enum in `crates/bmc-mock/src/lib.rs`.
+
+3. **Implement platform-specific behavior** — at minimum:
+   - `fixed_number_of_dpu()` — return the fixed DPU count for this platform, or `None` if variable.
+   - `dpu_type()` — map this platform to the correct `DpuType` (e.g. `Bluefield3`, `Bluefield4`).
+   - NIC inventory — declare all NICs present on the platform (management, storage, data-plane) using the appropriate NIC types from `crates/bmc-mock/src/hw/nic*.rs`.
+
+4. **Wire the mock into `machine_info.rs`** so the platform can be instantiated in integration tests.
+
+5. **Add or update tests** that exercise discovery, inventory, and provisioning against the new mock. Do not claim coverage from unrelated tests — use the mock path that matches the real hardware's Redfish surface.
+
+### Adding a New DPU Generation
+
+DPU-specific support spans the mock layer and the live Redfish explorer.
+
+1. **Create a new DPU mock file** at `crates/bmc-mock/src/hw/bluefield<N>.rs`, following `bluefield3.rs` or `bluefield4.rs` as a reference.
+
+2. **Add NIC mode detection** in `crates/bmc-explorer/src/computer_system.rs`. Match the new DPU's Redfish `manufacturer` and `model` strings and map them to `NicMode::Dpu` or `NicMode::Nic` as appropriate.
+
+3. **Add a new `DpuType` variant** if the DPU generation is architecturally distinct from existing ones, and update all `match` expressions that branch on `DpuType`.
+
+4. **Document tested firmware versions** — specify the DOCA and HBN versions validated against your implementation. These will be added to `docs/getting-started/prerequisites/hardware.md`.
+
+### Adding a New NIC
+
+1. **Create a NIC descriptor file** at `crates/bmc-mock/src/hw/nic_<vendor>_<model>.rs`, following existing files such as `nic_nvidia_cx7.rs` or `nic_intel_e810.rs`.
+
+2. **Reference the new NIC** from the relevant host platform mocks that include it.
+
+3. If the NIC requires special Redfish handling or udev enumeration logic, update `crates/bmc-explorer` and `crates/host-support/src/hardware_enumeration.rs` accordingly and add targeted tests.
+
+### Updating the Hardware Compatibility List
+
+Every hardware support contribution must be accompanied by an update to:
+
+- **`docs/hcl.md`** — add the new platform, DPU, or NIC with its validated firmware versions.
+- **`docs/getting-started/prerequisites/hardware.md`** — update hardware requirements and Redfish prerequisites if the new hardware introduces new constraints.
+
+Pull requests that add hardware without updating the HCL will not be merged.
+
+### Testing Requirements
+
+NICo engineering does not have access to every hardware platform supported by the community. As a contributor adding hardware support, **you are the hardware owner and are responsible for validating your contribution against real hardware** before the PR can be merged.
+
+#### Mock-based validation (required, not sufficient)
+
+- All new hardware must be fully represented in `crates/bmc-mock/src/hw/` before the PR is submitted.
+- Tests must exercise discovery, NIC mode detection, DPU inventory, and provisioning against the new mock.
+- CI runs mock-based tests only — a passing CI run is a necessary but not sufficient condition for merge.
+
+#### Real-hardware validation (required for merge)
+
+Before requesting review, run NICo against your physical hardware and document the following in the PR description:
+
+- Hardware model, OEM, and SKU
+- BMC firmware version
+- DOCA and HBN firmware versions
+- Any deviations between real Redfish responses and your mock implementation, with an explanation of how they were resolved
+
+PRs that lack real-hardware validation results will not be merged. If your hardware access is time-limited (e.g. a lab window), call this out early in the issue discussion so the review can be prioritized accordingly.
+
+#### Keeping the mock honest
+
+If real-hardware testing reveals discrepancies between your mock and the actual Redfish surface, **update the mock to match reality** before merging. A mock that does not reflect real hardware behavior undermines the value of the entire mock layer for future contributors.
 
 ## Questions?
 
