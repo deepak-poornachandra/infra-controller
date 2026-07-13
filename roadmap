@@ -1,0 +1,149 @@
+# NICo public roadmap: v2.0, v2.1, v2.2, v2.3+, and 2027+
+
+This page summarizes the current direction for NVIDIA Infra Controller (NICo). NICo provides site-local bare-metal lifecycle management for AI infrastructure, including hardware lifecycle operations, multitenant networking, and DPU-based isolation.
+
+This roadmap is directional, not a commitment to ship every item listed. Scope, sequencing, and release targets can change as maintainers learn from users, contributors, partners, and production deployments.
+
+Use the public milestones and tracking issues for the most current implementation status:
+
+* [NICo milestones](https://github.com/NVIDIA/infra-controller/milestones)
+* [v2.0 milestone](https://github.com/NVIDIA/infra-controller/milestone/5)
+* [v2.1 milestone](https://github.com/NVIDIA/infra-controller/milestone/6)
+* [v2.2 milestone](https://github.com/NVIDIA/infra-controller/milestone/7)
+
+Look for issues labeled `roadmap`, `good-first-issue`, and `help-wanted` for contribution opportunities. If a roadmap item does not yet have a public tracking issue, please open one before starting implementation work.
+
+## v2.0: RMS, DPF, and API unification
+
+Target window: July 2026
+
+v2.0 focuses on making NICo's core surfaces more consistent and operable: REST API and `nicocli` parity, monorepo and single-versioning work, Helm and documentation alignment, Rack Management System (RMS) support, DPF-backed DPU management, and Zero-DPU support.
+
+### Priority areas:
+
+* REST API and `nicocli` parity for core admin operations, including power, BMC reset, DPU reprovisioning, health overrides, and site-wide BMC credential setup: [#1927](https://github.com/NVIDIA/infra-controller/issues/1927)
+* DPF integration and making DPF the default DPU management path: [#672](https://github.com/NVIDIA/infra-controller/issues/672)
+* Zero-DPU host support for environments where DPU installation is unavailable or unsuitable: [#870](https://github.com/NVIDIA/infra-controller/issues/870)
+* Rack management through RMS, including switch, power shelf, compute tray, and NMX-C workflows: [#1408](https://github.com/NVIDIA/infra-controller/issues/1408), [#1409](https://github.com/NVIDIA/infra-controller/issues/1409), [#2420](https://github.com/NVIDIA/infra-controller/issues/2420), [#2463](https://github.com/NVIDIA/infra-controller/issues/2463)
+* Component Manager integration with RMS for NVOS password rotation, NVOS updates, and NMX-C configuration: [#2041](https://github.com/NVIDIA/infra-controller/issues/2041)
+* Health management APIs for switches, power shelves, and racks: [#240](https://github.com/NVIDIA/infra-controller/issues/240)
+* Public roadmap, release model, known gaps, and compatibility documentation: [#3065](https://github.com/NVIDIA/infra-controller/issues/3065)
+
+### Operational hardening in scope:
+
+* Predefined BMC IP allocation for expected machines: [#790](https://github.com/NVIDIA/infra-controller/issues/790)
+* Default and site-wide BMC credential handling during ingestion: [#1294](https://github.com/NVIDIA/infra-controller/issues/1294)
+* Clearer handling when config file changes do not take effect after initial deployment: [#933](https://github.com/NVIDIA/infra-controller/issues/933)
+* DPU firmware management in NIC mode: [#2246](https://github.com/NVIDIA/infra-controller/issues/2246)
+* Redfish diagnostic payload forwarding for downstream log consumers: [#2817](https://github.com/NVIDIA/infra-controller/issues/2817)
+
+## v2.1: GB300 support and operational enhancements
+
+Target window: August 2026
+
+v2.1 focuses on GB300 readiness, deployment hardening, stability, usability, simulation at scale, and reducing operational complexity.
+
+### Priority areas:
+
+* GB300 NVL72 support: [#256](https://github.com/NVIDIA/infra-controller/issues/256)
+* Vault dependency removal and migration toward simpler managed-secret and token-based authentication flows: [#195](https://github.com/NVIDIA/infra-controller/issues/195)
+* Managed password lifecycle automation, including rotation and revocation: [#367](https://github.com/NVIDIA/infra-controller/issues/367)
+* Follow-up REST API, OpenAPI, `nicocli`, and documentation parity after the v2.0 admin workflow audit: [#2852](https://github.com/NVIDIA/infra-controller/issues/2852)
+* Observability reference architecture for logs, metrics, traces, dashboards, and alerting: [#1989](https://github.com/NVIDIA/infra-controller/issues/1989)
+* Per-object lifecycle progress observability for machines, instances, hosts, DPUs, state transitions, and manual intervention: [#2186](https://github.com/NVIDIA/infra-controller/issues/2186)
+* Health Check Library MVP for post-repair validation: [#2962](https://github.com/NVIDIA/infra-controller/issues/2962)
+
+### Operational and scale improvements:
+
+* Task sequence customization for built-in rack and tray lifecycle operations: [#2072](https://github.com/NVIDIA/infra-controller/issues/2072)
+* Site-wide phased operation runs for large-scale firmware updates and other controlled operations: [#3131](https://github.com/NVIDIA/infra-controller/issues/3131)
+* Firmware object model to unbundle firmware artifacts and versions from core/backend deployment: [#2114](https://github.com/NVIDIA/infra-controller/issues/2114)
+* BMC proxy and DPS-facing power provisioning flows: [#2092](https://github.com/NVIDIA/infra-controller/issues/2092), [#3298](https://github.com/NVIDIA/infra-controller/issues/3298), [#991](https://github.com/NVIDIA/infra-controller/issues/991), [#2356](https://github.com/NVIDIA/infra-controller/issues/2356)
+* Local and scale simulation improvements through `nico-machine-a-tron`: [#3289](https://github.com/NVIDIA/infra-controller/issues/3289)
+
+## v2.2: next-generation platform enablement
+
+Target window: September 2026
+
+v2.2 focuses on next-generation platform support and the control-plane capabilities needed for newer rack, DPU, networking, power, and trust workflows.
+
+### Priority areas:
+
+* Vera Rubin NVL72 support: [#258](https://github.com/NVIDIA/infra-controller/issues/258)
+* BlueField-4 support: [#257](https://github.com/NVIDIA/infra-controller/issues/257)
+* DPF changes for Astra, including service support, DPU deployment variants, hardware-triggered reprovisioning, multi-reboot flows, and Spectrum-X configuration handling: [#3205](https://github.com/NVIDIA/infra-controller/issues/3205)
+* Spectrum-X partitioning and multitenancy: [#259](https://github.com/NVIDIA/infra-controller/issues/259), [#2238](https://github.com/NVIDIA/infra-controller/issues/2238)
+* DPS integration for NVSwitch and power provisioning workflows: [#2051](https://github.com/NVIDIA/infra-controller/issues/2051), [#2092](https://github.com/NVIDIA/infra-controller/issues/2092)
+* Domain-level topology, power control, and firmware update APIs that can extend beyond racks to rows, scalable units, and larger domains: [#2080](https://github.com/NVIDIA/infra-controller/issues/2080)
+* Automation framework for state-, event-, and time-triggered task execution: [#2073](https://github.com/NVIDIA/infra-controller/issues/2073)
+
+### Trust, validation, and platform services:
+
+* REST and `nicocli` support for measurables and trust approve rules: [#2801](https://github.com/NVIDIA/infra-controller/issues/2801)
+* DPU device identity using BlueField IRoT for node identity bootstrap without mTLS: [#2917](https://github.com/NVIDIA/infra-controller/issues/2917)
+* NICo attestation SRD and SADD: [#3099](https://github.com/NVIDIA/infra-controller/issues/3099)
+* Rack validation and multinode test framework: [#416](https://github.com/NVIDIA/infra-controller/issues/416)
+* Machine validation operator visibility and control: [#453](https://github.com/NVIDIA/infra-controller/issues/453)
+* Health history for switches, power shelves, and racks: [#1384](https://github.com/NVIDIA/infra-controller/issues/1384)
+* Tenant-visible instance health status: [#214](https://github.com/NVIDIA/infra-controller/issues/214)
+
+### API and networking improvements:
+
+* Routing Profile lifecycle management through REST API: [#2624](https://github.com/NVIDIA/infra-controller/issues/2624)
+* IP block ownership migration into NICo Core: [#2145](https://github.com/NVIDIA/infra-controller/issues/2145)
+* Redfish session-token usage for BMC-facing services: [#460](https://github.com/NVIDIA/infra-controller/issues/460), [#2853](https://github.com/NVIDIA/infra-controller/issues/2853)
+
+## v2.3+: IPv6 readiness and stateless API direction
+
+Target window: rest of 2026 H2
+
+v2.3+ focuses on IPv6 readiness, API simplification, and the next layer of operational automation.
+
+### Priority areas:
+
+* IPv6 support across managed hosts, BMC networks, DHCP, EVPN, overlay networks, IP allocations, monitoring, and Spectrum-X networks: [#84](https://github.com/NVIDIA/infra-controller/issues/84)
+* IPv6 DPU/agent support: [#1264](https://github.com/NVIDIA/infra-controller/issues/1264)
+* IPv6 bug scan and readiness bucket: [#2237](https://github.com/NVIDIA/infra-controller/issues/2237)
+* Critical IPv6 bug fixes, including `/64` allocation, BMC URL formatting, tenant IPv6 route leaking, IPv6 nameserver propagation, and IPv6 capacity reporting: [#2239](https://github.com/NVIDIA/infra-controller/issues/2239), [#2240](https://github.com/NVIDIA/infra-controller/issues/2240), [#2241](https://github.com/NVIDIA/infra-controller/issues/2241), [#2242](https://github.com/NVIDIA/infra-controller/issues/2242), [#2243](https://github.com/NVIDIA/infra-controller/issues/2243)
+* Dual-stack overlay, EVPN, DHCP, DNS, and customer documentation work: [#2414](https://github.com/NVIDIA/infra-controller/issues/2414), [#2417](https://github.com/NVIDIA/infra-controller/issues/2417), [#2385](https://github.com/NVIDIA/infra-controller/issues/2385), [#2628](https://github.com/NVIDIA/infra-controller/issues/2628)
+* NICo REST MCP support for read-only API operations: [#2006](https://github.com/NVIDIA/infra-controller/issues/2006)
+
+### Needs tracking issue:
+
+* Stateless REST API direction and scope.
+* IPv6 preview criteria for overlay networks and BMC networks.
+* Exit criteria for full single-stack IPv6 support.
+
+## 2027+: ecosystem expansion and governance
+
+Target window: 2027 and beyond
+
+The longer-term roadmap expands NICo across partner hardware, modular networking, ecosystem integration, and community governance.
+
+### Priority areas:
+
+* Partner and vendor hardware enablement, including PowerEdge XE9780 support: [#3227](https://github.com/NVIDIA/infra-controller/issues/3227)
+* LPX rack deployment evaluation and enablement: [#2818](https://github.com/NVIDIA/infra-controller/issues/2818)
+* Modular SDN controller mode for external SDN controllers and partner networking stacks: [#982](https://github.com/NVIDIA/infra-controller/issues/982)
+* Partner integration guidance, including storage vendor integration boundaries: [#3059](https://github.com/NVIDIA/infra-controller/issues/3059)
+* Dashboards packaged in the repository and installable through Helm charts: [#1696](https://github.com/NVIDIA/infra-controller/issues/1696)
+* Unified instrumentation standard for logs and metrics: [#3169](https://github.com/NVIDIA/infra-controller/issues/3169)
+
+### Needs tracking issue:
+
+* NVCert or equivalent certification flow for additional vendor-driven hardware support.
+* Full IPv6 single-stack release criteria.
+* OSS community governance model.
+
+## Contribution Areas
+
+These are the highest-impact areas for community and partner contributions:
+
+* Documentation: release model, compatibility matrix, upgrade paths, operator runbooks, and roadmap maintenance.
+* Platform enablement: GB300, Vera Rubin, BlueField-4, Astra, LPX, and partner hardware validation.
+* Rack operations: RMS, DPS, domain-level topology, power, firmware, and phased operation workflows.
+* DPF and DPU lifecycle: DPF-managed DPU provisioning, standalone DPU provisioning, DPU identity, DPU services, and reprovisioning flows.
+* Networking: IPv6, Spectrum-X, Routing Profiles, IP blocks, Modular SDN, overlay routing, DHCP, DNS, and EVPN.
+* Observability and operations: dashboards, metrics, logs, traces, health history, state progress, alerting, and large-scale incident workflows.
+* Security and trust: Vault removal, token auth, managed-secret lifecycle, attestation, trust approve rules, and Redfish session tokens.
+* Simulation and testing: `nico-machine-a-tron`, host firmware simulation, DHCP simulation, IPMI/SOL simulation, and large-scale workflow testing.
