@@ -7,11 +7,8 @@ This roadmap is directional, not a commitment to ship every item listed. Scope, 
 Use the public milestones and tracking issues for the most current implementation status:
 
 * [NICo milestones](https://github.com/NVIDIA/infra-controller/milestones)
-* [v2.0 milestone](https://github.com/NVIDIA/infra-controller/milestone/5)
-* [v2.1 milestone](https://github.com/NVIDIA/infra-controller/milestone/6)
-* [v2.2 milestone](https://github.com/NVIDIA/infra-controller/milestone/7)
 
-Look for issues labeled `roadmap`, `good-first-issue`, and `help-wanted` for contribution opportunities. If a roadmap item does not yet have a public tracking issue, please open one before starting implementation work.
+If a roadmap item does not yet have a public tracking issue, please open one before starting implementation work.
 
 ## v2.0: RMS, DPF, and API unification
 
@@ -27,7 +24,6 @@ v2.0 focuses on making NICo's core surfaces more consistent and operable: REST A
 * Rack management through RMS, including switch, power shelf, compute tray, and NMX-C workflows: [#1408](https://github.com/NVIDIA/infra-controller/issues/1408), [#1409](https://github.com/NVIDIA/infra-controller/issues/1409), [#2420](https://github.com/NVIDIA/infra-controller/issues/2420), [#2463](https://github.com/NVIDIA/infra-controller/issues/2463)
 * Component Manager integration with RMS for NVOS password rotation, NVOS updates, and NMX-C configuration: [#2041](https://github.com/NVIDIA/infra-controller/issues/2041)
 * Health management APIs for switches, power shelves, and racks: [#240](https://github.com/NVIDIA/infra-controller/issues/240)
-* Public roadmap, release model, known gaps, and compatibility documentation: [#3065](https://github.com/NVIDIA/infra-controller/issues/3065)
 
 ### Operational hardening in scope:
 
@@ -111,8 +107,6 @@ v2.3+ focuses on IPv6 readiness, API simplification, and the next layer of opera
 ### Needs tracking issue:
 
 * Stateless REST API direction and scope.
-* IPv6 preview criteria for overlay networks and BMC networks.
-* Exit criteria for full single-stack IPv6 support.
 
 ## 2027+: ecosystem expansion and governance
 
@@ -122,7 +116,7 @@ The longer-term roadmap expands NICo across partner hardware, modular networking
 
 ### Priority areas:
 
-* Partner and vendor hardware enablement, including PowerEdge XE9780 support: [#3227](https://github.com/NVIDIA/infra-controller/issues/3227)
+* Hardware enablement, including PowerEdge XE9780 support: [#3227](https://github.com/NVIDIA/infra-controller/issues/3227)
 * LPX rack deployment evaluation and enablement: [#2818](https://github.com/NVIDIA/infra-controller/issues/2818)
 * Modular SDN controller mode for external SDN controllers and partner networking stacks: [#982](https://github.com/NVIDIA/infra-controller/issues/982)
 * Partner integration guidance, including storage vendor integration boundaries: [#3059](https://github.com/NVIDIA/infra-controller/issues/3059)
@@ -139,9 +133,9 @@ The longer-term roadmap expands NICo across partner hardware, modular networking
 
 These are the highest-impact areas for community and partner contributions:
 
-* Documentation: release model, compatibility matrix, upgrade paths, operator runbooks, and roadmap maintenance.
+* Documentation: upgrade paths, operator runbooks, and roadmap maintenance.
 * Platform enablement: GB300, Vera Rubin, BlueField-4, Astra, LPX, and partner hardware validation.
-* Rack operations: RMS, DPS, domain-level topology, power, firmware, and phased operation workflows.
+* Rack operations: DPS, domain-level topology, power, firmware, and phased operation workflows.
 * DPF and DPU lifecycle: DPF-managed DPU provisioning, standalone DPU provisioning, DPU identity, DPU services, and reprovisioning flows.
 * Networking: IPv6, Spectrum-X, Routing Profiles, IP blocks, Modular SDN, overlay routing, DHCP, DNS, and EVPN.
 * Observability and operations: dashboards, metrics, logs, traces, health history, state progress, alerting, and large-scale incident workflows.
